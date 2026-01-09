@@ -16,7 +16,7 @@ use App\Http\Controllers\API\LinkController;
 |
 */
 
-Route::group(['middleware' => [], 'as' => 'api.'], function () {
+Route::group(['middleware' => ['api_key'], 'as' => 'api.'], function () {
     Route::post('links', [LinkController::class, 'store'])
         ->name('links.store');
 
