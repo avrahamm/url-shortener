@@ -11,13 +11,13 @@ class LinkController extends Controller
     /**
      * @param StoreLinkRequest $request
      * @return void
-     * @example: curl -X POST http://127.0.0.1:8000/api/links \
-     * -H "Content-Type: application/json" \
-     * -H "Accept: application/json" \
-     * -H "X-Api-Key: secret123" \
-     * -d '{
-     * "target_url": "https://example.com"
-     * }'
+     * @example: curl -X POST http://url-shortener/api/links \
+      -H "Content-Type: application/json" \
+      -H "Accept: application/json" \
+      -H "X-Api-Key: secret123" \
+      -d '{
+      "target_url": "https://example.com"
+      }'
      */
     public function store(StoreLinkRequest $request)
     {

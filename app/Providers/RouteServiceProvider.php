@@ -28,6 +28,12 @@ class RouteServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
+        RateLimiter::for('rate-limit-by-api-key', function (Request $request) {
+            $byApiKeyLimit = config('api.rate_limit_by_api_key');
+            return Limit::perMinute(30)
+                ->by($request->header('X-Api-Key'));
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')
