@@ -30,7 +30,7 @@ class RouteServiceProvider extends ServiceProvider
 
         RateLimiter::for('rate-limit-by-api-key', function (Request $request) {
             $byApiKeyLimit = config('api.rate_limit_by_api_key');
-            return Limit::perMinute(30)
+            return Limit::perMinute($byApiKeyLimit)
                 ->by($request->header('X-Api-Key'));
         });
 

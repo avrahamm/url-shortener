@@ -17,7 +17,7 @@ use App\Http\Controllers\API\LinkController;
 */
 
 Route::group(['middleware' => ['api_key'], 'as' => 'api.'], function () {
-    Route::middleware('throttle:rate-limit-by-ip')->post('links', [LinkController::class, 'store'])
+    Route::middleware('throttle:rate-limit-by-api-key')->post('links', [LinkController::class, 'store'])
         ->name('links.store');
 
     Route::get('/links/{slug}/stats', [LinkController::class, 'stats'])
