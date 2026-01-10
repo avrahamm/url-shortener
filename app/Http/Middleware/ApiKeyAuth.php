@@ -15,8 +15,14 @@ class ApiKeyAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $apiKey = $request->header('X-Api-Key');
-        if ($apiKey !== env('API_KEY')) {
+        $apiKeyFromHeader = $request->header('X-Api-Key');
+        if (!$apiKeyFromHeader) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $apiKey = config('api.api_key');
+
+        if ($apiKeyFromHeader !== $apiKey) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
