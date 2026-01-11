@@ -18,9 +18,9 @@ class LinkService
         }
     }
 
-    public function getStatCacheKey(Link $link): string
+    public function getStatCacheKey(int $linkId): string
     {
-        return 'link_stats_' . $link->id;
+        return 'link_stats_' . $linkId;
 
     }
 }

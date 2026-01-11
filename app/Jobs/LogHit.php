@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\LinkHitRecorded;
 use App\Models\LinkHit;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -38,5 +39,7 @@ class LogHit implements ShouldQueue
             'ip' => $this->ip,
             'user_agent' => $this->userAgent
         ]);
+
+        event(new LinkHitRecorded($this->linkId));
     }
 }

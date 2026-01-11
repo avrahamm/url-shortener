@@ -61,7 +61,7 @@ class LinkController extends Controller
     {
         info('LinkController::stats', ['slug' => $slug]);
         $link = Link::where('slug', $slug)->firstorFail();
-        $cacheKey = (new LinkService())->getStatCacheKey($link);
+        $cacheKey = (new LinkService())->getStatCacheKey($link->id);
 
         // If Cache exists, return it.
         if (Cache::has($cacheKey)) {
