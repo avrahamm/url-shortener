@@ -9,6 +9,7 @@ use App\Jobs\LogHit;
 use App\Models\Link;
 use App\Models\LinkHit;
 use App\Services\LinkService;
+use Illuminate\Support\Facades\Cache;
 
 class LinkController extends Controller
 {
@@ -60,28 +61,44 @@ class LinkController extends Controller
     {
         info('LinkController::stats', ['slug' => $slug]);
         $link = Link::where('slug', $slug)->firstorFail();
+        $cacheKey = (new LinkService())->getStatCacheKey($link);
 
-        $totalHits = $link->hits()->count();
-        $lastHits = LinkHit::where('link_id', $link->id)
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function ($linkHit) {
-                $ip = $linkHit->ip;
-                $parts = explode('.', $ip);
-                $parts[3] = '0';
-                $truncatedIp = implode('.', $parts);
-                return [
-                    'timestamp' => $linkHit->created_at->format('Y-m-d H:i:s'),
-                    'ip' => $truncatedIp,
-                ];
-            });
+        // If Cache exists, return it.
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
 
-        return response()->json([
-            'total_hits' => $totalHits,
-            'last_hits' => $lastHits,
-            'target_url' => $link->target_url,
-        ]);
+        $statsCacheTTLInSeconds = config('api.stats_cache_ttl_in_seconds');
+
+        // If not, calculate and store in Cache it.
+        $payload = Cache::remember(
+            $cacheKey, $statsCacheTTLInSeconds, function () use ($link) {
+            $totalHits = $link->hits()->count();
+            $lastHits = LinkHit::where('link_id', $link->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($linkHit) {
+                    $ip = $linkHit->ip;
+                    $parts = explode('.', $ip);
+                    $parts[3] = '0';
+                    $truncatedIp = implode('.', $parts);
+                    return [
+                        'timestamp' => $linkHit->created_at->format('Y-m-d H:i:s'),
+                        'ip' => $truncatedIp,
+                    ];
+                });
+
+            // to make the difference vs. Cached call.
+            sleep(5);
+            return response()->json([
+                'total_hits' => $totalHits,
+                'last_hits' => $lastHits,
+                'target_url' => $link->target_url,
+            ]);
+        });
+
+        return response()->json($payload);
     }
 
     /**

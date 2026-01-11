@@ -17,4 +17,10 @@ class LinkService
             return $slug;
         }
     }
+
+    public function getStatCacheKey(Link $link): string
+    {
+        return 'link_stats_' . $link->id;
+
+    }
 }
