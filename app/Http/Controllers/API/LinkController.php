@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLinkRequest;
 use App\Jobs\LogHit;
 use App\Models\Link;
+use App\Models\LinkHit;
 use App\Services\LinkService;
 
 class LinkController extends Controller
@@ -43,16 +44,44 @@ class LinkController extends Controller
 
 
     /**
+     * Returns JSON:
+     *  total_hits,
+     *  last_hits (5 latest with timestamp and truncated IP),
+     *  and target_url.
+     *
      * @param string $slug
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      * @example: curl http://url-shortener/api/links/bla/stats \
-     *   -H "Content-Type: application/json" \
-     *   -H "Accept: application/json" \
-     *   -H "X-Api-Key: secret123"
+         -H "Content-Type: application/json" \
+         -H "Accept: application/json" \
+         -H "X-Api-Key: secret123"
      */
     public function stats(string $slug)
     {
         info('LinkController::stats', ['slug' => $slug]);
+        $link = Link::where('slug', $slug)->firstorFail();
+
+        $totalHits = $link->hits()->count();
+        $lastHits = LinkHit::where('link_id', $link->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($linkHit) {
+                $ip = $linkHit->ip;
+                $parts = explode('.', $ip);
+                $parts[3] = '0';
+                $truncatedIp = implode('.', $parts);
+                return [
+                    'timestamp' => $linkHit->created_at->format('Y-m-d H:i:s'),
+                    'ip' => $truncatedIp,
+                ];
+            });
+
+        return response()->json([
+            'total_hits' => $totalHits,
+            'last_hits' => $lastHits,
+            'target_url' => $link->target_url,
+        ]);
     }
 
     /**
