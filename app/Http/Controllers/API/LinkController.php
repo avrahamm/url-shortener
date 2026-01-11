@@ -55,14 +55,22 @@ class LinkController extends Controller
     }
 
     /**
+     * GET /r/{slug} → 302 redirect to target_url,
+     * if is_active=true, otherwise return 404/410.
+     *
      * @param string $slug
-     * @return void
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @example: curl http://url-shortener/r/bl1  \
-     *              -H "Content-Type: application/json"
+                   * -H "Content-Type: application/json"
      */
     public function redirect(string $slug)
     {
-        info('LinkController::redirect', ['slug' => $slug]);
+        //info('LinkController::redirect', ['slug' => $slug]);
+        $link = Link::where('slug', $slug)->first();
+        if (!$link || !$link->is_active) {
+            abort(404);
+        }
+        return redirect($link->target_url);
     }
 
 }
