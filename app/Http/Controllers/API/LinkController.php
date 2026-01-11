@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\StoreLinkRequest;
+use App\Jobs\LogHit;
 use App\Models\Link;
 use App\Services\LinkService;
 
@@ -70,6 +71,12 @@ class LinkController extends Controller
         if (!$link || !$link->is_active) {
             abort(404);
         }
+        LogHit::dispatch(
+            linkId: $link->id,
+            ip: request()->ip(),
+            userAgent: request()->userAgent()
+        );
+
         return redirect($link->target_url);
     }
 
