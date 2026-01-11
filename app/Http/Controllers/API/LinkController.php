@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLinkRequest;
 use App\Models\Link;
 use App\Services\LinkService;
-use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class LinkController extends Controller
 {
