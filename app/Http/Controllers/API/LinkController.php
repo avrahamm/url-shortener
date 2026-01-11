@@ -5,23 +5,40 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 
 use App\Http\Requests\StoreLinkRequest;
+use App\Models\Link;
+use App\Services\LinkService;
+use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class LinkController extends Controller
 {
     /**
      * @param StoreLinkRequest $request
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      * @example: curl -X POST http://url-shortener/api/links \
-      -H "Content-Type: application/json" \
-      -H "Accept: application/json" \
-      -H "X-Api-Key: secret123" \
-      -d '{
-      "target_url": "https://example.com"
-      }'
+       -H "Content-Type: application/json" \
+       -H "Accept: application/json" \
+       -H "X-Api-Key: secret123" \
+       -d '{
+       "target_url": "https://example.com"
+       }'
      */
     public function store(StoreLinkRequest $request)
     {
-        info('LinkController::store', ['request' => $request->all()]);
+//        info('LinkController::store', ['request' => $request->all()]);
+        $slug = $request->get('slug');
+        if (!$slug) {
+            $slug = (new LinkService)->getUniqueSlug();
+        }
+        $link = Link::create([
+            'slug' => $slug,
+            'target_url' => $request->validated()['target_url'],
+            'is_active' => true
+        ]);
+
+        // Success, return response 200
+        return response()->json([
+                'link' => $link,
+            ]);
     }
 
 

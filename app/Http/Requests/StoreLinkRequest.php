@@ -23,7 +23,7 @@ class StoreLinkRequest extends FormRequest
     {
         return [
             'target_url' => ['required','url'],
-            'slug' => ['nullable','string','max:255','unique:links,slug']
+//            'slug' => ['nullable','string','max:255','unique:links,slug']
         ];
     }
 }
