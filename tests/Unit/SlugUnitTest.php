@@ -5,7 +5,6 @@ namespace Tests\Unit;
 use App\Services\LinkService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\TestCase;
-use Faker\Provider\Uuid;
 
 class SlugUnitTest extends TestCase
 {

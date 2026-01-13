@@ -26,7 +26,6 @@ class LinkController extends Controller
      */
     public function store(StoreLinkRequest $request)
     {
-//        info('LinkController::store', ['request' => $request->all()]);
         $slug = $request->get('slug');
         if (!$slug) {
             $slug = (new LinkService)->getUniqueSlug();
@@ -59,7 +58,6 @@ class LinkController extends Controller
      */
     public function stats(string $slug)
     {
-        info('LinkController::stats', ['slug' => $slug]);
         $link = Link::where('slug', $slug)->firstorFail();
         $cacheKey = (new LinkService())->getStatCacheKey($link->id);
 
@@ -112,7 +110,6 @@ class LinkController extends Controller
      */
     public function redirect(string $slug)
     {
-        //info('LinkController::redirect', ['slug' => $slug]);
         $link = Link::where('slug', $slug)->first();
         if (!$link || !$link->is_active) {
             abort(404);

@@ -5,8 +5,7 @@ namespace Tests\Feature;
 use App\Jobs\LogHit;
 use App\Models\Link;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Queue\Queue;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class LinkFeatureTest extends TestCase
@@ -82,7 +81,8 @@ class LinkFeatureTest extends TestCase
 
     public function test_redirect_and_dispatched_LogHit_job_to_queue()
     {
-        \Illuminate\Support\Facades\Queue::fake();
+//        \Illuminate\Support\Facades\Queue::fake();
+        Queue::fake();
 
         $targetUrl = 'https://apple.com';
         $slug = 'apple';
