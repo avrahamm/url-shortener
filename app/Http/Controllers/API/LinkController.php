@@ -106,7 +106,7 @@ class LinkController extends Controller
      * @param string $slug
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @example: curl http://url-shortener/r/bl1  \
-                   * -H "Content-Type: application/json"
+                    -H "Content-Type: application/json"
      */
     public function redirect(string $slug)
     {
