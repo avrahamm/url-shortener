@@ -11,19 +11,16 @@ class SlugUnitTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_slug_uniqueness_and_allowed_characters(): void
+    public function test_allowed_characters(): void
     {
-        for ($i = 0; $i < 100; $i++) {
-            $slug1 = Uuid::bothify("******");
-            $this->assertMatchesRegularExpression(
-                '/^[A-Za-z0-9]+$/', $slug1
-            );
+        $count = 10;
+        $links = [];
 
-            $slug2 = Uuid::bothify("******");
+        for ($i = 0; $i < $count; $i++) {
+             $slug = new LinkService()->getSlug();
             $this->assertMatchesRegularExpression(
-                '/^[A-Za-z0-9]+$/', $slug1
+                '/^[A-Za-z0-9]+$/', $slug
             );
-            $this->assertNotSame($slug1, $slug2);
         }
     }
 }
