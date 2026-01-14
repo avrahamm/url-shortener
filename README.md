@@ -35,8 +35,7 @@ sudo chown -R $USER: .
 ./vendor/bin/sail artisan key:generate
 
 #Run the migrations and seed the database
-./vendor/bin/sail artisan migrate
-./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan migrate --seed
 
 # optionally connect to the database to inspect it.
 ./vendor/bin/sail exec url-shortener-pgsql psql -U sail -d url-shortener-pgsql
