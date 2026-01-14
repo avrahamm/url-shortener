@@ -37,7 +37,11 @@ sudo chown -R $USER: .
 #Run the migrations and seed the database
 ./vendor/bin/sail artisan migrate --seed
 
-# optionally connect to the database to inspect it.
+# Open a new tab to run the Queue worker.
+# So the Queue LogHit job can run asynchronously.
+./vendor/bin/sail artisan queue:work
+
+# optionally open another tab and connect to the database to inspect it.
 ./vendor/bin/sail exec url-shortener-pgsql psql -U sail -d url-shortener-pgsql
 url-shortener-pgsql=# select * from links;
 url-shortener-pgsql=# \q
@@ -63,14 +67,33 @@ curl -X POST http://url-shortener/api/links \
        "target_url": "https://example.com"
        }'
        
-curl http://url-shortener/api/links/bla/stats \
+curl http://url-shortener/r/apple  \
+        -H "Content-Type: application/json"
+ 
+# Now it will take some time to calculate.      
+curl http://url-shortener/api/links/apple/stats \
          -H "Content-Type: application/json" \
          -H "Accept: application/json" \
          -H "X-Api-Key: secret123"
 
-curl http://url-shortener/r/bl1  \
-        -H "Content-Type: application/json"
+# Now it will return fast from Cache.   
+curl http://url-shortener/api/links/apple/stats \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/json" \
+         -H "X-Api-Key: secret123"
 
+# This call disables Cache
+curl http://url-shortener/r/apple  \
+        -H "Content-Type: application/json"
+        
+# Now it will again take some time to calculate.      
+curl http://url-shortener/api/links/apple/stats \
+         -H "Content-Type: application/json" \
+         -H "Accept: application/json" \
+         -H "X-Api-Key: secret123"
+         
+# You can review the Queue tab to monitor the Queue worker.
+# You can monitor the database tables content also.
 exit
 # Review tests, there are also API calls similar to curl examples above.
 # Run tests.
