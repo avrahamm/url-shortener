@@ -74,14 +74,13 @@ class LinkFeatureTest extends TestCase
             ]
         );
 
-        //It should return 500 because slug is duplicate
-        $response->assertStatus(500);
+        // It should return 422 because the slug is duplicate
+        $response->assertStatus(422);
 
     }
 
     public function test_redirect_and_dispatched_LogHit_job_to_queue()
     {
-//        \Illuminate\Support\Facades\Queue::fake();
         Queue::fake();
 
         $targetUrl = 'https://apple.com';
